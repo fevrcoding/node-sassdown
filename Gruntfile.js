@@ -83,6 +83,6 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-nodeunit');
 
     // By default, lint and run all tests.
-    grunt.registerTask('default', ['clean', 'jshint', 'sassdown']);
+    grunt.registerTask('default', ['clean', 'sassdown']);
 
 };

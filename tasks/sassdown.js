@@ -8,7 +8,8 @@
 'use strict';
 
 // Require the Sassdown module
-var Sassdown = require('../lib/sassdown');
+var _ = require('lodash'),
+    Sassdown = require('../lib/sassdown');
 
 module.exports = function (grunt) {
 
@@ -35,59 +36,67 @@ module.exports = function (grunt) {
             options.excludeMissing = true;
         }
 
-        this.files.forEach(function (file) {
 
-            var srcFiles = file.src.filter(function (f) {
+        var srcFiles = [];
+        var dest = _.get(this.files[0], 'orig.dest');
+        var srcdir = _.get(this.files[0], 'orig.cwd');
+
+
+        srcFiles = this.files.reduce(function (prev, curr) {
+            var src = curr.src.filter(function (f) {
                 return grunt.file.isFile(f);
             });
+            return prev.concat(src);
+        }, []);
 
-            // Subtask: Init (expose module and grunt)
-            var sassdown = new Sassdown(srcFiles, file.dest, options);
+        srcFiles = _.compact(_.uniq(srcFiles));
 
-            // Subtask: Scaffold, Template, Theme, Scripts
-            grunt.verbose.subhead('Compile the Handlebars template, theme, syntax highlighter, and scripts:');
+        // Subtask: Init (expose module and grunt)
+        var sassdown = new Sassdown(srcFiles, srcdir, dest, options);
 
-            sassdown.registerHandlebarsHelpers();
-            sassdown.scaffold();
-            sassdown.template();
-            sassdown.theme();
-            sassdown.highlight();
-            sassdown.scripts();
+        // Subtask: Scaffold, Template, Theme, Scripts
+        grunt.verbose.subhead('Compile the Handlebars template, theme, syntax highlighter, and scripts:');
 
-            // Subtask: Assets
-            grunt.verbose.subhead('Read and create paths for included assets:');
+        sassdown.registerHandlebarsHelpers();
+        sassdown.scaffold();
+        sassdown.template();
+        sassdown.theme();
+        sassdown.highlight();
+        sassdown.scripts();
 
-            sassdown.assets();
+        // Subtask: Assets
+        grunt.verbose.subhead('Read and create paths for included assets:');
 
-            // Subtask: Files
-            grunt.verbose.subhead('Read and parse contents of source files:');
-            sassdown.pages();
+        sassdown.assets();
 
-            // Subtask: Trees
-            sassdown.tree();
+        // Subtask: Files
+        grunt.verbose.subhead('Read and parse contents of source files:');
+        sassdown.pages();
 
-            if (options.dryRun) {
-                if (sassdown.excluded.length) {
-                    grunt.verbose.or.warn('Source files invalid');
-                    return false;
-                }
+        // Subtask: Trees
+        sassdown.tree();
 
-                grunt.verbose.or.ok('Source files validated');
-                return true;
+        if (options.dryRun) {
+            if (sassdown.excluded.length) {
+                grunt.verbose.or.warn('Source files invalid');
+                return false;
             }
 
-            // Subtask: Indexing
-            grunt.verbose.subhead('Write styleguide index file:');
-            sassdown.readme();
+            grunt.verbose.or.ok('Source files validated');
+            return true;
+        }
 
-            // Subtask: Output
-            grunt.verbose.subhead('Write styleguide copies of source files:');
-            sassdown.output();
+        // Subtask: Indexing
+        grunt.verbose.subhead('Write styleguide index file:');
+        sassdown.readme();
 
-            // Finish: Notify user of completion
-            grunt.verbose.or.ok('Styleguide created: ' + file.orig.dest);
+        // Subtask: Output
+        grunt.verbose.subhead('Write styleguide copies of source files:');
+        sassdown.output();
 
-        });
+        // Finish: Notify user of completion
+        grunt.verbose.or.ok('Styleguide created: ' + dest);
+
 
     });
 
