@@ -1,7 +1,7 @@
 {
   "name": "node-sassdown",
   "description": "Node tool for building living styleguides with Handlebars from Markdown comments in CSS, Sass and LESS files. Ported from sassdown.",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "author": {
     "name": "Marco Solazzi",
     "email": "marco.solazzi@gmail.com",
