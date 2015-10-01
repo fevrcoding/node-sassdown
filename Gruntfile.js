@@ -16,19 +16,16 @@ module.exports = function(grunt) {
         jshint: {
             all: [
                 'Gruntfile.js',
-                'tasks/libs/sassdown.js',
-                'tasks/sassdown.js',
+                'libs/sassdown.js'
             ],
             options: {
-                jshintrc: '.jshintrc',
-            },
+                jshintrc: '.jshintrc'
+            }
         },
-
-        test: 'xxx',
 
         // Before generating any new files, remove any previously-created files.
         clean: {
-            example: ['test/*/styleguide/'],
+            example: ['test/*/styleguide/']
         },
 
         // Configuration to be run (and then tested).
@@ -78,11 +75,13 @@ module.exports = function(grunt) {
     grunt.loadTasks('tasks');
 
     // These plugins provide necessary tasks.
-    grunt.loadNpmTasks('grunt-contrib-jshint');
-    grunt.loadNpmTasks('grunt-contrib-clean');
-    grunt.loadNpmTasks('grunt-contrib-nodeunit');
+    ['grunt-contrib-jshint',
+    'grunt-contrib-clean',
+    'grunt-contrib-nodeunit'].forEach(function (task) {
+            grunt.loadNpmTasks(task);
+    });
 
     // By default, lint and run all tests.
-    grunt.registerTask('default', ['clean', 'sassdown']);
+    grunt.registerTask('default', ['clean', 'jshint', 'sassdown']);
 
 };
