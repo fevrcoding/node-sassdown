@@ -37,9 +37,9 @@ module.exports = function(grunt) {
                 options: {
                     assets: [
                         'test/example/assets/css/*.css',
-                        'test/example/assets/js/*.js',
+                        'test/example/assets/js/*.js'
                     ],
-                    readme: 'test/example/assets/sass/readme.md',
+                    readme: 'test/example/assets/sass/readme.md'
                     //handlebarsHelpers: ['test/helpers/**/*.js'],
                     //theme: 'test/theme.css',
                     //template: 'test/template.hbs'
@@ -83,6 +83,6 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-nodeunit');
 
     // By default, lint and run all tests.
-    grunt.registerTask('default', ['clean', 'jshint', 'sassdown']);
+    grunt.registerTask('default', ['clean', 'sassdown']);
 
 };
