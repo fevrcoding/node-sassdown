@@ -1,14 +1,13 @@
-# sassdown
+# node-sassdown
 
-> Grunt plugin for building living styleguides with Handlebars from Markdown comments in CSS, Sass and LESS files.
+> Node library for building living styleguides with Handlebars from Markdown comments in CSS, Sass and LESS files.
 
-**Note: *This plugin is in semi-active development!* So expect it to be a little rough around the edges. If you have any questions, issues or suggestions get in touch. Currently on version `0.2.7`.**
+**Note: *This library is a port of [sassdown](https://github.com/nopr/sassdown) by Jesper Hills. Currently based on version `0.2.7`.**
 
 1. [Getting started](#getting-started)
-2. [Sassdown task](#sassdown-task)
-    - [Overview](#overview)
+2. [Usage](#usage)
     - [Options](#options)
-    - [Usage](#usage)
+    - [Arguments](#arguments)
 3. [Markdown](#markdown)
 4. [Handlebars](#handlebars)
 5. [Highlight.js](#highlightjs)
@@ -18,47 +17,58 @@
 7. [Template](#template)
 8. [Sass](#sass)
 
-### What's new in version 0.2.7?
-
-- Path resolving is relative; no more issues serving from localhost or using file:// protocols
-- Whitespace and preformatting is preserved in markup results
-- Source styles shown in conjunction with markup and result
-- Pages are served form an array-literal node tree; meaning clearer and nested navigation
-- Comment block matching is modifiable via regular expressions
-- Choice of syntax highlighting styles from various popular Highlight.js themes
-- Syntax highlighting is done with Node before templates compile; faster page loads
-
 ## Getting started
 
-Install this plugin with this command:
+Install this library with this command:
 
 ```bash
-npm install sassdown --save-dev
+npm install node-sassdown --save-dev
 ```
 
-Enabled inside your Gruntfile with this line of JavaScript:
+## Usage
+
+Import the library in your file and initialize it 
 
 ```js
-grunt.loadNpmTasks('sassdown');
+var Sassdown = require('node-sassdown');
+
+var srcGlob = '**/*.scss';
+var srcPath = 'assets/scss';
+var destPath = 'styleguide';
+var options = {};
+
+var sassdown = new Sassdown(srcGlob, srcPath, destPath, options);
+
+//generate styleguide
+sassdown.run();
+
 ```
 
-## Sassdown Task
+###Arguments
 
-Run the task using `grunt sassdown`. Task targets, files and options may be specified according to the grunt [configuring tasks](http://gruntjs.com/configuring-tasks) guide.
+#### srcGlob
+Type: `String|Array`<br/>
+Default: `null`
 
-### Overview
-In your project's Gruntfile, add a section named `sassdown` to the data object passed into `grunt.initConfig()`.
+A [glob](https://github.com/isaacs/node-glob) path or an array of filepaths
+ 
+#### srcPath
+Type: `String`<br/>
+Default: `null`
 
-```js
-sassdown: {
-    options: {
-        // Task-specific options go here.
-    },
-    target: {
-        // Target-specific file lists and/or options go here.
-    },
-},
-```
+Root folder of source files (used as `cwd` [option](https://github.com/isaacs/node-glob#options) in glob )
+
+#### destPath
+Type: `String`<br/>
+Default: `null`
+
+Root folder of generated styleguide
+
+#### options
+Type: `Object`<br/>
+Default: `{}`
+
+Styleguide options. See below for details
 
 ### Options
 
@@ -66,7 +76,7 @@ sassdown: {
 Type: `Array`<br/>
 Default: `null`
 
-*Optional*. Array of file paths. Will be included into the styleguide output. Supports [globbing](http://gruntjs.com/configuring-tasks#globbing-patterns). Supports relative and absolute file paths (eg. `http://`, `https://`, `//` or even `file://`).
+*Optional*. Array of file paths. Will be included into the styleguide output. Supports [globbing](https://github.com/isaacs/node-glob). Supports relative and absolute file paths (eg. `http://`, `https://`, `//` or even `file://`).
 
 #### options.template
 Type: `String`<br/>
@@ -78,7 +88,7 @@ Default: `null`
 Type: `Array`<br/>
 Default: `null`
 
-*Optional*. Array of file paths. The [Handlebars helpers](http://handlebarsjs.com/#helpers) will be available to use in the template. Supports [globbing](http://gruntjs.com/configuring-tasks#globbing-patterns). Supports relative and absolute file paths (eg. `http://`, `https://` or even `file://`).
+*Optional*. Array of file paths. The [Handlebars helpers](http://handlebarsjs.com/#helpers) will be available to use in the template. Supports [globbing](https://github.com/isaacs/node-glob). Supports relative and absolute file paths (eg. `http://`, `https://` or even `file://`).
 
 #### options.theme
 Type: `String`<br/>
@@ -102,9 +112,9 @@ Default: `github`
 Type: `Array`<br/>
 Default: `null`
 
-*Optional*. Array of file paths. The scripts will be linked with script tags with src attributes. Supports [globbing](http://gruntjs.com/configuring-tasks#globbing-patterns). Supports relative and absolute file paths (eg. `http://`, `https://`, `//` or even `file://`).
+*Optional*. Array of file paths. The scripts will be linked with script tags with src attributes. Supports [globbing](https://github.com/isaacs/node-glob). Supports relative and absolute file paths (eg. `http://`, `https://`, `//` or even `file://`).
 
-If this option is set the default scripts won't be included, but you can include them again by adding `node_modules/sassdown/tasks/data/scripts.js` to the file list, or by copying and modifying that file.
+If this option is set the default scripts won't be included, but you can include them again by adding `node_modules/node-sassdown/lib/data/scripts.js` to the file list, or by copying and modifying that file.
 
 #### options.commentStart
 Type: `RegExp`<br/>
@@ -129,55 +139,6 @@ Type: `Boolean`<br/>
 Default: `false`
 
 *Optional*. When set to true, Sassdown will not generate any files, and will exit with status `1` if any files do not contain matching or valid comment blocks.
-
-### Usage
-
-You will need to use an [expanded files object](http://gruntjs.com/configuring-tasks#building-the-files-object-dynamically), but here is roughly the minimum configuration required.
-```js
-sassdown: {
-    styleguide: {
-        options: {
-            assets: ['public/css/*.css']
-        },
-        files: [{
-            expand: true,
-            cwd: 'src/sass',
-            src: ['*.scss'],
-            dest: 'public/styleguide/'
-        }]
-    }
-},
-```
-
-On larger projects you may need to include additional assets and customise the output with a user theme, template and scripts.
-```js
-sassdown: {
-    styleguide: {
-        options: {
-            assets: [
-                'public/css/**/*.min.css',
-                'public/js/*.min.js',
-                'http://use.typekit.net/sea5yvm.js',
-            ],
-            theme: 'src/styleguide/theme.css',
-            template: 'src/styleguide/template.hbs',
-            scripts: ['src/styleguide/*.js'],
-            readme: 'src/assets/sass/readme.md',
-            highlight: 'monokai',
-            excludeMissing: true
-        },
-        files: [{
-            expand: true,
-            cwd: 'src/assets/sass',
-            src: [
-                'partials/**/*.{scss,sass}',
-                'modules/**/*.{scss,sass}'
-            ],
-            dest: 'public/styleguide/'
-        }]
-    }
-},
-```
 
 # Markdown
 
@@ -364,15 +325,3 @@ Should you wish to create a new Sassdown template, you may wish to use the [exis
 It should be noted that, despite the name, Sassdown does not explicitly read only Sass files. It works just fine with .sass, .less, .css or even .txt files.
 
 Sassdown **does not** compile your source files. Assuming you are using SASS, and since you're using Grunt, I would recommend the [grunt-contrib-compass](https://github.com/gruntjs/grunt-contrib-compass) plugin for this task. However you may also want to look at [grunt-contrib-stylus](https://github.com/gruntjs/grunt-contrib-stylus).
-
-# Project Milestones
-
-*Current [milestones](https://github.com/nopr/sassdown/milestones) for this project*
-
-## Contributing
-
-1. Fork it
-2. Create your feature branch (`git checkout -b my-new-feature`)
-3. Commit your changes (`git commit -am 'Add some feature'`)
-4. Push to the branch (`git push origin my-new-feature`)
-5. Create new Pull Request

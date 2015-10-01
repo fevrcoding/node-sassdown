@@ -16,19 +16,16 @@ module.exports = function(grunt) {
         jshint: {
             all: [
                 'Gruntfile.js',
-                'tasks/libs/sassdown.js',
-                'tasks/sassdown.js',
+                'libs/sassdown.js'
             ],
             options: {
-                jshintrc: '.jshintrc',
-            },
+                jshintrc: '.jshintrc'
+            }
         },
-
-        test: 'xxx',
 
         // Before generating any new files, remove any previously-created files.
         clean: {
-            example: ['test/*/styleguide/'],
+            example: ['test/*/styleguide/']
         },
 
         // Configuration to be run (and then tested).
@@ -37,9 +34,9 @@ module.exports = function(grunt) {
                 options: {
                     assets: [
                         'test/example/assets/css/*.css',
-                        'test/example/assets/js/*.js',
+                        'test/example/assets/js/*.js'
                     ],
-                    readme: 'test/example/assets/sass/readme.md',
+                    readme: 'test/example/assets/sass/readme.md'
                     //handlebarsHelpers: ['test/helpers/**/*.js'],
                     //theme: 'test/theme.css',
                     //template: 'test/template.hbs'
@@ -78,9 +75,11 @@ module.exports = function(grunt) {
     grunt.loadTasks('tasks');
 
     // These plugins provide necessary tasks.
-    grunt.loadNpmTasks('grunt-contrib-jshint');
-    grunt.loadNpmTasks('grunt-contrib-clean');
-    grunt.loadNpmTasks('grunt-contrib-nodeunit');
+    ['grunt-contrib-jshint',
+    'grunt-contrib-clean',
+    'grunt-contrib-nodeunit'].forEach(function (task) {
+            grunt.loadNpmTasks(task);
+    });
 
     // By default, lint and run all tests.
     grunt.registerTask('default', ['clean', 'jshint', 'sassdown']);
