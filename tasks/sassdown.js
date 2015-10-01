@@ -29,7 +29,8 @@ module.exports = function (grunt) {
             excludeMissing: false,
             dryRun: false,
             commentStart: /\/\*/,
-            commentEnd: /\*\//
+            commentEnd: /\*\//,
+            verbose: false
         });
 
         if (options.dryRun) {
